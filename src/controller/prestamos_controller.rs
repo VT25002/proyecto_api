@@ -9,13 +9,14 @@ use sqlx::PgPool;
 use crate::models::prestamos::CrearPrestamo;
 use crate::service::prestamos_service;
 
-pub fn prestamos_routes() -> Router<PgPool> {
+pub fn prestamos_routes(pool: PgPool) -> Router {
     Router::new()
         .route("/prestamos", get(obtener_todos))
-        .route("/prestamos/:id", get(obtener_por_id))
+        .route("/prestamos/{id}", get(obtener_por_id))
         .route("/prestamos", post(crear))
-        .route("/prestamos/:id", put(actualizar))
-        .route("/prestamos/:id", delete(eliminar))
+        .route("/prestamos/{id}", put(actualizar))
+        .route("/prestamos/{id}", delete(eliminar))
+        .with_state(pool)
 }
 
 async fn obtener_todos(
@@ -44,7 +45,10 @@ async fn crear(
 ) -> Result<(StatusCode, Json<crate::models::prestamos::Prestamo>), StatusCode> {
     match prestamos_service::crear(&pool, nuevo).await {
         Ok(prestamo) => Ok((StatusCode::CREATED, Json(prestamo))),
-        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+        Err(e) => {
+            println!("Error al crear prestamo: {:?}", e);
+            Err(StatusCode::INTERNAL_SERVER_ERROR)
+        }
     }
 }
 

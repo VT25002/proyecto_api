@@ -5,9 +5,7 @@ mod controller;
 mod config;
 mod repository;
 
-//cambiar por los controllers que tengas
-use controller::pais_controller::pais_router;
-use controller::persona_controller::persona_router;
+use controller::prestamos_controller::prestamos_routes;
 
 use config::config::crear_pool;
 
@@ -29,10 +27,6 @@ async fn main() {
         .expect("Error al iniciar el servidor");
 }
 
-
-
 fn unificar_routers(pool: sqlx::PgPool) -> axum::Router {
-    let mut router1 = pais_router(pool.clone());
-    let router2 = persona_router(pool.clone());
-    router1.merge(router2)
+    prestamos_routes(pool.clone())
 }
