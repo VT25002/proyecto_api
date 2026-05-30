@@ -1,6 +1,7 @@
 use sqlx::PgPool;
 use crate::models::autores::{Autor, CrearAutor};
 
+// Obtiene todos los autores registrados en un Vector
 pub async fn obtener_todos(pool: &PgPool) -> Result<Vec<Autor>, sqlx::Error> {
     let autores = sqlx::query_as::<_, Autor>(
         "SELECT id_autor, nombre, nacionalidad FROM Autores"
@@ -10,6 +11,7 @@ pub async fn obtener_todos(pool: &PgPool) -> Result<Vec<Autor>, sqlx::Error> {
     Ok(autores)
 }
 
+// Busca un autor por su ID (Retorna un Option por si no existe)
 pub async fn obtener_por_id(pool: &PgPool, id: i32) -> Result<Option<Autor>, sqlx::Error> {
     let autor = sqlx::query_as::<_, Autor>(
         "SELECT id_autor, nombre, nacionalidad FROM Autores WHERE id_autor = $1"
@@ -20,6 +22,7 @@ pub async fn obtener_por_id(pool: &PgPool, id: i32) -> Result<Option<Autor>, sql
     Ok(autor)
 }
 
+// Inserta un nuevo autor y retorna el registro con su ID generado
 pub async fn crear(pool: &PgPool, nuevo: CrearAutor) -> Result<Autor, sqlx::Error> {
     let autor = sqlx::query_as::<_, Autor>(
         "INSERT INTO Autores (nombre, nacionalidad) 
@@ -33,6 +36,7 @@ pub async fn crear(pool: &PgPool, nuevo: CrearAutor) -> Result<Autor, sqlx::Erro
     Ok(autor)
 }
 
+// Actualiza los datos de un autor existente según su ID
 pub async fn actualizar(pool: &PgPool, id: i32, datos: CrearAutor) -> Result<Option<Autor>, sqlx::Error> {
     let autor = sqlx::query_as::<_, Autor>(
         "UPDATE Autores SET nombre = $1, nacionalidad = $2 
@@ -47,6 +51,7 @@ pub async fn actualizar(pool: &PgPool, id: i32, datos: CrearAutor) -> Result<Opt
     Ok(autor)
 }
 
+// Elimina un autor por ID (Retorna true si se borró con éxito)
 pub async fn eliminar(pool: &PgPool, id: i32) -> Result<bool, sqlx::Error> {
     let resultado = sqlx::query(
         "DELETE FROM Autores WHERE id_autor = $1"
