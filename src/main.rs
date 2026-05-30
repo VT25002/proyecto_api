@@ -6,17 +6,18 @@ mod config;
 mod repository;
 
 use controller::prestamos_controller::prestamos_routes;
+use controller::autores_controller::router as autores_routes; // Importamos tu router
 
 use config::config::crear_pool;
 
 #[tokio::main]
 async fn main() {
-    let direccion = "127.0.0.1:3000";
+    let direccion: &str = "127.0.0.1:3000";
     let listener = tokio::net::TcpListener::bind(direccion)
         .await
         .expect("No se pudo enlazar el puerto 3000");
 
-    println!("Servidor escuchando en http://{direccion}");
+    println!("Servidor escuchando en http://{}", direccion);
 
     let pool = crear_pool()
         .await
@@ -29,4 +30,5 @@ async fn main() {
 
 fn unificar_routers(pool: sqlx::PgPool) -> axum::Router {
     prestamos_routes(pool.clone())
+        .merge(autores_routes(pool.clone())) // Aquí unimos tus rutas de autores
 }
