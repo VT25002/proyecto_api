@@ -7,7 +7,7 @@ pub struct Autor {
     pub nombre: String,
     pub nacionalidad: Option<String>, // Es Option porque en SQL puede ser NULL
 }
-
+//Para crear nuevos autores 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CrearAutor {
     pub nombre: String,
