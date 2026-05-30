@@ -9,7 +9,7 @@ use sqlx::PgPool;
 use crate::models::autores::{Autor, CrearAutor};
 use crate::service::autores_service;
 
-// El "pub" aquí permite que main.rs vea el router
+// Configuración de las rutas (endpoints) de la API para Autores
 pub fn router(pool: PgPool) -> Router {
     Router::new()
         .route("/autores", get(obtener_todos).post(crear_autor))
@@ -17,6 +17,7 @@ pub fn router(pool: PgPool) -> Router {
         .with_state(pool)
 }
 
+// GET /autores -> Retorna la lista de todos los autores
 pub async fn obtener_todos(
     State(pool): State<PgPool>,
 ) -> Result<Json<Vec<Autor>>, (StatusCode, String)> {
@@ -26,6 +27,7 @@ pub async fn obtener_todos(
     }
 }
 
+// GET /autores/:id -> Busca un autor por su ID
 pub async fn obtener_por_id(
     State(pool): State<PgPool>,
     Path(id): Path<i32>,
@@ -37,6 +39,7 @@ pub async fn obtener_por_id(
     }
 }
 
+// POST /autores -> Crea un nuevo autor
 pub async fn crear_autor(
     State(pool): State<PgPool>,
     Json(nuevo): Json<CrearAutor>,
@@ -47,6 +50,7 @@ pub async fn crear_autor(
     }
 }
 
+// PUT /autores/:id -> Modifica un autor existente
 pub async fn actualizar_autor(
     State(pool): State<PgPool>,
     Path(id): Path<i32>,
@@ -59,6 +63,7 @@ pub async fn actualizar_autor(
     }
 }
 
+// DELETE /autores/:id -> Elimina un autor por su ID
 pub async fn eliminar_autor(
     State(pool): State<PgPool>,
     Path(id): Path<i32>,
