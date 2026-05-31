@@ -7,6 +7,7 @@ mod repository;
 
 use controller::prestamos_controller::prestamos_routes;
 use controller::autores_controller::router as autores_routes;
+use controller::editoriales_controller::router as editoriales_routes;
 
 use config::config::crear_pool;
 
@@ -31,4 +32,5 @@ async fn main() {
 fn unificar_routers(pool: sqlx::PgPool) -> axum::Router {
     prestamos_routes(pool.clone())
         .merge(autores_routes(pool.clone()))
+        .merge(editoriales_routes(pool.clone()))
 }
