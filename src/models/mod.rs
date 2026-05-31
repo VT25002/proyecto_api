@@ -1,4 +1,5 @@
 pub mod autores;
-pub mod prestamos;
 pub mod editoriales;
 pub mod libros;
+pub mod prestamos;
+pub mod usuario;
