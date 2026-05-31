@@ -2,7 +2,7 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::Json,
-    routing::{get, post, put, delete},
+    routing::get,
     Router,
 };
 use sqlx::PgPool;
@@ -11,11 +11,8 @@ use crate::service::prestamos_service;
 
 pub fn prestamos_routes(pool: PgPool) -> Router {
     Router::new()
-        .route("/prestamos", get(obtener_todos))
-        .route("/prestamos/{id}", get(obtener_por_id))
-        .route("/prestamos", post(crear))
-        .route("/prestamos/{id}", put(actualizar))
-        .route("/prestamos/{id}", delete(eliminar))
+        .route("/prestamos", get(obtener_todos).post(crear))
+        .route("/prestamos/{id}", get(obtener_por_id).put(actualizar).delete(eliminar))
         .with_state(pool)
 }
 

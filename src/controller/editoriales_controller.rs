@@ -2,21 +2,20 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::Json,
+    routing::get,
     Router,
 };
 use sqlx::PgPool;
 use crate::models::editoriales::{Editorial, CrearEditorial};
 use crate::service::editoriales_service;
 
-// Configuración de las rutas (endpoints) de la API para Editoriales
 pub fn router(pool: PgPool) -> Router {
     Router::new()
-        .route("/editoriales", axum::routing::get(obtener_todos).post(crear_editorial))
-        .route("/editoriales/:id", axum::routing::get(obtener_por_id).put(actualizar_editorial).delete(eliminar_editorial))
+        .route("/editoriales", get(obtener_todos).post(crear_editorial))
+        .route("/editoriales/{id}", get(obtener_por_id).put(actualizar_editorial).delete(eliminar_editorial))
         .with_state(pool)
 }
 
-// GET /editoriales -> Retorna la lista de todas las editoriales
 pub async fn obtener_todos(
     State(pool): State<PgPool>,
 ) -> Result<Json<Vec<Editorial>>, (StatusCode, String)> {
@@ -26,7 +25,6 @@ pub async fn obtener_todos(
     }
 }
 
-// GET /editoriales/:id -> Busca una editorial por su ID
 pub async fn obtener_por_id(
     State(pool): State<PgPool>,
     Path(id): Path<i32>,
@@ -38,7 +36,6 @@ pub async fn obtener_por_id(
     }
 }
 
-// POST /editoriales -> Crea una nueva editorial
 pub async fn crear_editorial(
     State(pool): State<PgPool>,
     Json(nuevo): Json<CrearEditorial>,
@@ -49,7 +46,6 @@ pub async fn crear_editorial(
     }
 }
 
-// PUT /editoriales/:id -> Modifica una editorial existente
 pub async fn actualizar_editorial(
     State(pool): State<PgPool>,
     Path(id): Path<i32>,
@@ -62,7 +58,6 @@ pub async fn actualizar_editorial(
     }
 }
 
-// DELETE /editoriales/:id -> Elimina una editorial por su ID
 pub async fn eliminar_editorial(
     State(pool): State<PgPool>,
     Path(id): Path<i32>,

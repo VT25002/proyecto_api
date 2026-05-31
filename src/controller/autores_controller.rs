@@ -13,7 +13,7 @@ use crate::service::autores_service;
 pub fn router(pool: PgPool) -> Router {
     Router::new()
         .route("/autores", get(obtener_todos).post(crear_autor))
-        .route("/autores/:id", get(obtener_por_id).put(actualizar_autor).delete(eliminar_autor))
+        .route("/autores/{id}", get(obtener_por_id).put(actualizar_autor).delete(eliminar_autor))
         .with_state(pool)
 }
 
