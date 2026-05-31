@@ -22,6 +22,6 @@ pub async fn actualizar_usuario(
     usuario_repository::actualizar(pool, id, data).await
 }
 
-pub async fn eliminar_usuario(pool: &PgPool, id: i32) -> Result<u64, sqlx::Error> {
+pub async fn eliminar_usuario(pool: &PgPool, id: i32) -> Result<bool, sqlx::Error> {
     usuario_repository::eliminar(pool, id).await
 }

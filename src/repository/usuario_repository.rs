@@ -2,30 +2,33 @@ use crate::models::usuario::{CrearUsuario, Usuario};
 use sqlx::PgPool;
 
 pub async fn obtener_todos(pool: &PgPool) -> Result<Vec<Usuario>, sqlx::Error> {
-    sqlx::query_as!(Usuario, "SELECT id, nombre, email FROM usuarios")
-        .fetch_all(pool)
-        .await
+    let usuarios = sqlx::query_as::<_, Usuario>(
+        "SELECT id_usuario, nombre, direccion, fecha_registro FROM usuarios",
+    )
+    .fetch_all(pool)
+    .await?;
+    Ok(usuarios)
 }
 
 pub async fn obtener_por_id(pool: &PgPool, id: i32) -> Result<Option<Usuario>, sqlx::Error> {
-    sqlx::query_as!(
-        Usuario,
-        "SELECT id, nombre, email FROM usuarios WHERE id = $1",
-        id
+    let usuario = sqlx::query_as::<_, Usuario>(
+        "SELECT id_usuario, nombre, direccion, fecha_registro FROM usuarios WHERE id_usuario = $1",
     )
+    .bind(id)
     .fetch_optional(pool)
-    .await
+    .await?;
+    Ok(usuario)
 }
 
 pub async fn crear(pool: &PgPool, data: CrearUsuario) -> Result<Usuario, sqlx::Error> {
-    sqlx::query_as!(
-        Usuario,
-        "INSERT INTO usuarios (nombre, email) VALUES ($1, $2) RETURNING id, nombre, email",
-        data.nombre,
-        data.email
+    let usuario = sqlx::query_as::<_, Usuario>(
+        "INSERT INTO usuarios (nombre, direccion) VALUES ($1, $2) RETURNING id_usuario, nombre, direccion, fecha_registro"
     )
+    .bind(data.nombre)
+    .bind(data.direccion)
     .fetch_one(pool)
-    .await
+    .await?;
+    Ok(usuario)
 }
 
 pub async fn actualizar(
@@ -33,20 +36,21 @@ pub async fn actualizar(
     id: i32,
     data: CrearUsuario,
 ) -> Result<Option<Usuario>, sqlx::Error> {
-    sqlx::query_as!(
-        Usuario,
-        "UPDATE usuarios SET nombre=$1, email=$2 WHERE id=$3 RETURNING id, nombre, email",
-        data.nombre,
-        data.email,
-        id
+    let usuario = sqlx::query_as::<_, Usuario>(
+        "UPDATE usuarios SET nombre=$1, direccion=$2 WHERE id_usuario=$3 RETURNING id_usuario, nombre, direccion, fecha_registro"
     )
+    .bind(data.nombre)
+    .bind(data.direccion)
+    .bind(id)
     .fetch_optional(pool)
-    .await
+    .await?;
+    Ok(usuario)
 }
 
-pub async fn eliminar(pool: &PgPool, id: i32) -> Result<u64, sqlx::Error> {
-    let result = sqlx::query!("DELETE FROM usuarios WHERE id = $1", id)
+pub async fn eliminar(pool: &PgPool, id: i32) -> Result<bool, sqlx::Error> {
+    let resultado = sqlx::query("DELETE FROM usuarios WHERE id_usuario = $1")
+        .bind(id)
         .execute(pool)
         .await?;
-    Ok(result.rows_affected())
+    Ok(resultado.rows_affected() > 0)
 }

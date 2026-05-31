@@ -62,8 +62,8 @@ async fn eliminar(
     Path(id): Path<i32>,
 ) -> Result<StatusCode, StatusCode> {
     match usuario_service::eliminar_usuario(&pool, id).await {
-        Ok(1..) => Ok(StatusCode::NO_CONTENT),
-        Ok(_) => Err(StatusCode::NOT_FOUND),
+        Ok(true) => Ok(StatusCode::NO_CONTENT),
+        Ok(false) => Err(StatusCode::NOT_FOUND),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
 }
